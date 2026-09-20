@@ -1,15 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es2022",
+    "target": "esnext",
     "module": "es2022",
     "skipLibCheck": true,
     "allowJs": true,
     "strict": true,
     "strictPropertyInitialization": false,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "rootDir": "./webapp",
     "outDir": "./dist",
-    "baseUrl": "./",
     "paths": {
       "com/app/mtalens/*": [
         "./webapp/*"
@@ -21,9 +20,9 @@
         "./webapp/test/integration/*"
       ]
     },
-    "typeRoots": [
-      "./node_modules/@types",
-      "./node_modules/@sapui5/types"
+    "types": [
+      "@types",
+      "@sapui5/types"
     ]
   },
   "include": [
