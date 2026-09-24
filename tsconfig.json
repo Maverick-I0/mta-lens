@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "es2022",
     "module": "es2022",
     "skipLibCheck": true,
     "allowJs": true,
@@ -21,7 +21,6 @@
       ]
     },
     "types": [
-      "@types",
       "@sapui5/types"
     ]
   },
