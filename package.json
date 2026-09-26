@@ -10,7 +10,7 @@
   "main": "webapp/index.html",
   "dependencies": {},
   "devDependencies": {
-    "@babel/eslint-parser": "7.29.9",
+    "@babel/eslint-parser": "8.0.5",
     "@sap-ux/eslint-plugin-fiori-tools": "^10.11.0",
     "@sap/cds-dk": "^10.1.2",
     "@sap/ux-ui5-tooling": "1.32.0",
