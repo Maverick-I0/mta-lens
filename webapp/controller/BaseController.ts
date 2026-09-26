@@ -2,6 +2,10 @@ import Controller from "sap/ui/core/mvc/Controller";
 import Model from "sap/ui/model/Model";
 import View from "sap/ui/core/mvc/View";
 
+
+/**
+ * @namespace com.app.mtalens.controller
+ */
 export default class BaseController extends Controller {
   /**
    * Sets the model at view level.
