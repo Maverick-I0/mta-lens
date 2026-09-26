@@ -20,7 +20,7 @@
     "@ui5/cli": "^4.0.69",
     "eslint": "^10.11.0",
     "eslint-plugin-fiori-custom": "2.6.7",
-    "typescript": "^6",
+    "typescript": "^7",
     "ui5-tooling-transpile": "^3.13.1"
   },
   "scripts": {
