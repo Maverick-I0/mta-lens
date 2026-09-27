@@ -125,7 +125,7 @@ jobs:
 
   summary:
     name: Release summary
-    needs: [release-please, tag, branch]
+    needs: [release-please, tag, branch, docs]
     if: needs.release-please.outputs.release_created == 'true'
     runs-on: ubuntu-latest
     steps:

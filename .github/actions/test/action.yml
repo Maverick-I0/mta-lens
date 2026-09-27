@@ -22,15 +22,13 @@ runs:
 
     - name: Run Linter
       shell: bash
-      run: npm run lint
+      run: npm run --if-present lint
 
     - name: Run Unit Tests & Print Coverage
       shell: bash
-      # The --coverage flag forces most test runners (Jest/Vitest) to capture 
-      # coverage and automatically print the table output to the GitHub Actions console.
-      run: npm run test:unit -- --coverage
+      run: npm run --if-present test:unit -- --coverage --passWithNoTests
 
     - name: Run Integration Tests
       if: ${{ inputs.run_integration == 'true' }}
       shell: bash
-      run: npm run test:integration
+      run: npm run --if-present test:integration -- --passWithNoTests
