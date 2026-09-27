@@ -1,0 +1,32 @@
+name: "Build App"
+description: "Transpiles and builds application code"
+
+inputs:
+  upload_files:
+    description: "Set to 'true' to upload the GitHub Pages artifact"
+    required: false
+    default: 'false'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+
+    - name: Install Dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Build Application
+      shell: bash
+      run: npm run build
+
+    # This step only runs if upload_pages is explicitly set to 'true'
+    - name: Upload Pages Artifact
+      if: ${{ inputs.upload_files == 'true' }}
+      uses: actions/upload-pages-artifact@v4
+      with:
+        path: ./dist

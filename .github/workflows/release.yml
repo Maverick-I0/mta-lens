@@ -1,0 +1,60 @@
+name: Release & Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+# Elevated permissions required for GitHub Pages and Release Please
+permissions:
+  contents: write
+  pull-requests: write
+  pages: write
+  id-token: write
+
+jobs:
+  test:
+    name: Code Quality & Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run Tests & Lint
+        uses: ./.github/actions/test
+        with:
+          run_integration: 'true'
+
+  build:
+    name: Build Application & Docs
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build and Upload Artifact
+        uses: './.github/actions/build'
+        with:
+          upload_files: 'true'
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  post-release:
+    name: Post Deploy
+    needs: deploy
+    uses: ./.github/workflows/post-release.yml
+    permissions:
+        contents: read
+
+   
