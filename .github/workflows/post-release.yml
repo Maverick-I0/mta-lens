@@ -1,9 +1,5 @@
 name: Post Release Chore
 on:
-  push:
-    branches:
-      - main
-      - "release/**"
   workflow_dispatch:
   workflow_call:
 
@@ -30,7 +26,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           target-branch: ${{ github.ref_name }}
-          config-file: ./.github/workf1ows/configs/releaseplease.config.json
+          config-file: ./.github/workflows/configs/releaseplease.config.json
           manifest-file: ./.github/workflows/configs/releaseplease.manifest.json
   docs:
     name: Update Docs
