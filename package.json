@@ -19,9 +19,9 @@
     "@typescript-eslint/eslint-plugin": "^8.70.1",
     "@typescript-eslint/parser": "^8.70.1",
     "@ui5/cli": "^4.0.69",
-    "eslint": "^9.39.0",
+    "eslint": "^10.11.0",
     "eslint-plugin-fiori-custom": "2.6.7",
-    "typescript": "^6.0.1",
+    "typescript": "^7.0.2",
     "ui5-tooling-transpile": "^3.13.1",
     "typedoc": "^0.28.0"
   },
