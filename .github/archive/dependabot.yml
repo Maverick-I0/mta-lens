@@ -1,0 +1,83 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # ---------------------------------------------------------------------------
+  # 1. NPM (Node.js, TypeScript, SAP CAP, UI5 Tooling)
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    
+    # ENFORCE CONVENTIONAL COMMITS
+    commit-message:
+      prefix: "chore(deps)"
+
+    # AUTOMATIC PR LABELS
+    labels:
+      - "📦 dependencies"
+      - "🤖 dependabot"
+      - "npm"
+    
+    ignore:
+      - dependency-name: "@sap/cds"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@sap-cloud-sdk/*"
+        update-types: ["version-update:semver-major"]
+
+    groups:
+      sap-and-ui5-packages:
+        patterns:
+          - "@sap/*"
+          - "@sap-cloud-sdk/*"
+          - "@ui5/*"
+          
+      typescript-and-tooling:
+        patterns:
+          - "typescript"
+          - "@types/*"
+          - "eslint*"
+          - "prettier"
+          - "jest"
+          
+      safe-minor-patch-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # ---------------------------------------------------------------------------
+  # 2. GitHub Actions (CI/CD Workflows)
+  # ---------------------------------------------------------------------------
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    
+    # ENFORCE CONVENTIONAL COMMITS
+    commit-message:
+      prefix: "chore(deps)"
+
+    # AUTOMATIC PR LABELS
+    labels:
+      - "📦 dependencies"
+      - "🤖 dependabot"
+      - "ci"
+    
+    groups:
+      action-updates:
+        patterns:
+          - "*"

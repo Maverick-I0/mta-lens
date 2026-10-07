@@ -1,0 +1,111 @@
+name: CI Pipeline
+
+on:
+  push:
+    paths:
+      - '**/*.ts'             # Any TypeScript file in the repository
+      - '**/*.js'             # Any JavaScript file in the repository
+      - 'package.json'        # Project root package configuration
+      - 'package-lock.json'   # Dependency lock file
+      - 'mta.yaml'            # SAP BTP Multi-Target Application descriptor
+      - '**/ui5.yaml'         # SAPUI5 configuration files
+      - '**/manifest.json'    # SAPUI5/CAP application manifests
+  pull_request:
+    branches:
+      - main
+      - develop
+      - feature/**
+      - hotfix/**
+    types: [opened, synchronize, reopened]
+    paths:
+      - '**/*.ts'             # Any TypeScript file in the repository
+      - '**/*.js'             # Any JavaScript file in the repository
+      - 'package.json'        # Project root package configuration
+      - 'package-lock.json'   # Dependency lock file
+      - 'mta.yaml'            # SAP BTP Multi-Target Application descriptor
+      - '**/ui5.yaml'         # SAPUI5 configuration files
+      - '**/manifest.json'    # SAPUI5/CAP application manifests
+  workflow_call:
+    inputs:
+      upload-mtar:
+        default: false
+        type: boolean
+        description: 'Specifies if the build steps needs to upload the mtar as artifact.'
+      build-app:
+        default: true
+        type: boolean
+        description: Specifies if build job needs to run.
+  workflow_dispatch:
+
+# Cancels in-progress runs for pull requests if new commits are pushed.
+# Ensures the main branch never cancels its own runs, to keep linear history.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run Linting
+        run: npm run --if-present lint
+
+  unit-test:
+    needs: lint
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Run Unit Tests
+        uses: ./.github/actions/test/unit
+        with:
+          coverage-file: './coverage/unit/lcov.info'
+          node-ver: ${{ vars.NODE_VER }}
+  
+  integration-test:
+    needs: lint
+    name: Run Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+      - name: Run Integration Test
+        uses: ./.github/actions/test/integration
+        with: 
+          coverage-file: './coverage/integration/lcov.info'
+          node-ver: ${{ vars.NODE_VER }}
+  
+  upload-coverage:
+    needs: [unit-test, integration-test]
+    name: Upload Coverage Reports
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    needs: [lint, unit-test, integration-test]
+    if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' || inputs.build-app }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Build App
+        uses: ./.github/actions/build
+        with:
+          # Strictly verify it builds, but do not upload artifacts for deployment
+          upload_mtar: ${{ inputs.upload-mtar }}
+          node-ver: ${{ vars.NODE_VER }}

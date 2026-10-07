@@ -1,0 +1,54 @@
+name: Setup CF Environment
+description: "Sets up the target cloudfoundry environent."
+
+inputs:
+  cf-api:
+    description: The Cloud Foundry API endpoint to connect to
+    required: true
+  cf-org: 
+    description: The Cloud Foundry organization to target
+    required: true
+  cf-space:
+    description: The Cloud Foundry space to target
+    required: true
+  cf-user:
+    description: The Cloud Foundry username to authenticate with
+    required: true
+  cf-pwd:
+    description: The Cloud Foundry password to authenticate with
+    required: true
+  node-ver:
+    description: Node Version to be used
+    default: 22
+    required: false
+  cf-origin-id:
+    description: UAA origin (identity provider) to use for authentication
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+   - uses: actions/setup-node@v7
+     name: Setup Node v${{ inputs.node-ver }}
+     with:
+      node-version: ${{ inputs.node-ver }}
+      cache: 'npm'
+
+   - name: Setup CloudFoundry
+     uses: cap-js/cf-setup@v2
+     with:
+      api: ${{ inputs.cf-api }}
+      org: ${{ inputs.cf-org }}
+      space: ${{ inputs.cf-space }}
+      origin: ${{ inputs.cf-origin-id }}
+      username: ${{ inputs.cf-user }}
+      password: ${{ inputs.cf-pwd }}
+
+   - name: Summary
+     if: success()
+     shell: bash
+     run: |
+      {
+        echo cf -v
+        echo cf target
+      } >> "$GITHUB_STEP_SUMMARY"

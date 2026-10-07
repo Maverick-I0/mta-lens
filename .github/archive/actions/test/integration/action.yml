@@ -1,0 +1,41 @@
+name: "Run Integration Test"
+description: "Runs unit tests with coverage"
+
+inputs:
+  test-command:
+    description: 'The exact test execution command to run the unit tests'
+    required: false
+    default: 'npm run --if-present test:integration -- --coverage --passWithNoTests --coverageDirectory=coverage/integration'
+  coverage-file:
+    description: "The covergare file that is generated apart from './coverage/unit/lcov.info'"
+    required: true
+    default: './coverage/integration/lcov.info'
+  retention-days:
+    description: 'Duration in days to keep the artifact (0 deletes immediately after workflow finishes)'
+    required: false
+    default: '0' # Keeps it ephemeral by default
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-ver }}
+        cache: 'npm'
+
+    - name: Install Dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Run Integration Tests with Coverage
+      shell: bash
+      run: ${{ inputs.test-command }}
+
+    - name: Upload Coverage
+      uses: actions/upload-artifact@v4
+      with:
+        name: unit-coverage-${{ github.run_id }}
+        path: ${{ inputs.coverage-file }}
+        retention-days: ${{ inputs.retention-days }} 
+

@@ -1,0 +1,72 @@
+{
+    "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+    "packages": {
+        ".": {
+            "release-type": "node",
+            "changelog-path": "CHANGELOG.md",
+            "include-v-in-tag": true,
+            "draft": false,
+            "prerelease": false,
+            "branch-name": "chore/release-pr",
+            "extra-files": [
+                {
+                    "type": "json",
+                    "path": "app/erportal/webapp/manifest.json",
+                    "jsonpath": "$['sap.app'].applicationVersion.version"
+                },
+                {
+                    "type": "yaml",
+                    "path": "mta.yaml",
+                    "jsonpath": "$.version"
+                }
+            ],
+            "changelog-sections": [
+                {
+                    "type": "feat",
+                    "section": "🚀 Features",
+                    "hidden": false
+                },
+                {
+                    "type": "fix",
+                    "section": "🐛 Bug Fixes",
+                    "hidden": false
+                },
+                {
+                    "type": "perf",
+                    "section": "⚡ Performance Improvements",
+                    "hidden": false
+                },
+                {
+                    "type": "refactor",
+                    "section": "♻️ Code Refactoring",
+                    "hidden": false
+                },
+                {
+                    "type": "docs",
+                    "section": "📝 Documentation",
+                    "hidden": true
+                },
+                {
+                    "type": "chore",
+                    "section": "🔧 Maintenance & Chores",
+                    "hidden": true
+                },
+                {
+                    "type": "ci",
+                    "section": "👷 Continuous Integration",
+                    "hidden": true
+                },
+                {
+                    "type": "test",
+                    "section": "✅ Testing",
+                    "hidden": true
+                },
+                {
+                    "type": "docs",
+                    "section": "📝 Documentation",
+                    "hidden": true
+                }
+            ]
+        }
+    }
+}

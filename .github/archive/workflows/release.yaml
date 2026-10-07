@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    # Trigger when documentation or source code changes
+    paths:
+      - "README.md"
+      - "guidelines.md"
+      - "src/**"
+      - "package*.json"
+  workflow_dispatch:
+
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+  deployments: write
+  issues: write
+  pull-requests: write
+
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+    with:
+      upload-mtar: false
+      build-app: false
+
+  deploy:
+    needs: [ci]
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
+    with:
+      environment: development
+
+  # docs:
+  #   needs: [deploy]
+  #   uses: ./.github/workflows/docs.yml
+  #   secrets: inherit
+
+  post-release:
+      needs: [deploy]
+      uses: ./.github/workflows/post-release.yaml
+      secrets: inherit
+      

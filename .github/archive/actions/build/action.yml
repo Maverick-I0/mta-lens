@@ -1,0 +1,41 @@
+name: "Build App"
+description: "Transpiles and builds application code"
+
+inputs:
+  upload-mtar:
+    description: "Set to 'true' to upload the build artifact."
+    required: false
+    default: 'false'
+  mtar-path:
+    description: "Path of the generated mtar, with mtar file."
+    default: './mta_archives/archive.mtar'
+    required: false
+  node-ver:
+    description: Node Version to be used
+    default: 22
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-ver }}
+        cache: 'npm'
+
+    - name: Install Dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Build Application
+      shell: bash
+      run: npm run build
+
+    # This step only runs if upload_pages is explicitly set to 'true'
+    - name: Upload Build Artifact
+      if: ${{ inputs.upload-mtar == 'true' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: mtar-build-${{ github.run_id }}
+        path: ${{ inputs.mtar-path }}

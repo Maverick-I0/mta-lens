@@ -1,0 +1,68 @@
+name: Deploy and Deploy Docs
+
+on:
+  workflow_call:
+    # No 'paths' filter here. The caller workflow (release.yml) dictates when this runs.
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy-docs:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ vars.NODE_VER }}
+
+      - name: Install Dependencies
+        run: npm ci
+
+      # 1. Build the API Docs first and save to a temporary folder
+      - name: Generate API Docs (TypeDoc)
+        run: npx typedoc --out ./typedoc_build src/
+
+      # 2. Stage the handwritten Markdown files
+      - name: Prepare Markdown Files
+        run: |
+          mkdir ./md_src
+          cp README.md ./md_src/index.md || true
+          cp ./docs/guidelines.md ./md_src/guidelines.md || true
+
+      # 3. Convert the Markdown files to HTML
+      - name: Build Markdown with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./md_src
+          destination: ./_site
+
+      # 4. Merge the TypeDoc output into the final Jekyll site folder
+      - name: Merge TypeDoc into Site
+        run: |
+          mv ./typedoc_build ./_site/api
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v6
+
+      # 5. Upload the merged folder
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: './_site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

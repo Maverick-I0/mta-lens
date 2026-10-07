@@ -1,0 +1,30 @@
+name: "Cloud Foundry Log Parser"
+description: "Parse Cloud Foundry operation logs, summarize error/warning/critical findings in GitHub step summary and optionally upload the logs as an artifact."
+inputs:
+  op-id:
+    description: "Operation ID, if known. When omitted, the action will look for the newest mta-op-* directory in the workspace."
+    required: false
+  upload-artifact:
+    description: "Whether to upload a zip of the parsed logs as a workflow artifact."
+    required: false
+    default: "true"
+  artifact-name:
+    description: "Artifact name to use for the ZIP of logs."
+    required: false
+    default: "cf-deploy-logs"
+runs:
+  using: "composite"
+  steps:
+    - name: Run CF log parser
+      shell: bash
+      run: |
+        set -euo pipefail
+        mkdir -p parsed_deploy_logs
+        python3 .github/actions/cloudfoundry/log-parser/log_parser.py "${{ inputs.op-id }}" parsed_deploy_logs || true
+
+    - name: Upload parsed logs artifact
+      if: ${{ inputs.upload-artifact == 'true' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: parsed_deploy_logs/*.zip
