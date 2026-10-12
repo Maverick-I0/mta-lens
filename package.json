@@ -18,7 +18,7 @@
     "@sapui5/types": "~1.153.0",
     "@typescript-eslint/eslint-plugin": "^8.70.1",
     "@typescript-eslint/parser": "^8.70.1",
-    "@ui5/cli": "^4.0.69",
+    "@ui5/cli": "^4.0.71",
     "eslint": "^10.11.0",
     "eslint-plugin-fiori-custom": "2.6.7",
     "typescript": "^7.0.2",
